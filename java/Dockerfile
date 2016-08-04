@@ -2,9 +2,10 @@ FROM ubuntu:trusty
 
 MAINTAINER kyle.mcintyre@centricient.com
 
-RUN apt-get update
-RUN apt-get install -y wget
-RUN apt-get install -y software-properties-common
+RUN apt-get update && \
+  apt-get install -y wget && \
+  apt-get install -y software-properties-common && \
+  apt-get install python2.7
 
 RUN \
   echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | debconf-set-selections && \
