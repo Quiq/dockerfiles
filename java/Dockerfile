@@ -2,7 +2,7 @@ FROM ubuntu:trusty
 
 MAINTAINER kyle.mcintyre@centricient.com
 
-RUN apt-get update && apt-get install -y wget software-properties-common python2.7 python2.7-pip
+RUN apt-get update && apt-get install -y wget software-properties-common python2.7
 RUN wget https://bootstrap.pypa.io/get-pip.py && python2.7 get-pip.py && pip install requests
 RUN pip install requests
 
