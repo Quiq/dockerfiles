@@ -2,7 +2,7 @@ FROM ubuntu:xenial
 
 MAINTAINER kyle.mcintyre@centricient.com
 
-RUN apt-get update && apt-get install -y wget software-properties-common python2.7
+RUN apt-get update && apt-get install -y wget software-properties-common python2.7 gcc
 RUN wget https://bootstrap.pypa.io/get-pip.py && python2.7 get-pip.py && pip install requests && pip install dumb-init
 
 RUN \
