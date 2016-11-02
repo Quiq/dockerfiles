@@ -3,8 +3,7 @@ FROM ubuntu:xenial
 MAINTAINER kyle.mcintyre@centricient.com
 
 RUN apt-get update && apt-get install -y wget software-properties-common python2.7
-RUN wget https://bootstrap.pypa.io/get-pip.py && python2.7 get-pip.py && pip install requests
-RUN pip install requests
+RUN wget https://bootstrap.pypa.io/get-pip.py && python2.7 get-pip.py && pip install requests && pip install dumb-init
 
 RUN \
   echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | debconf-set-selections && \
