@@ -17,6 +17,9 @@ RUN \
   rm -rf /var/lib/apt/lists/* && \
   rm -rf /var/cache/oracle-jdk8-installer
 
+COPY local_policy.jar /usr/lib/jvm/java-8-oracle/jre/lib/security/
+COPY US_export_policy.jar /usr/lib/jvm/java-8-oracle/jre/lib/security/
+
 RUN locale-gen en_US.UTF-8
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
