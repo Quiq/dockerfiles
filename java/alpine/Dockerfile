@@ -14,6 +14,7 @@ ENV JAVA_VERSION_MAJOR=8 \
     LC_ALL=en_US.UTF-8
 
 RUN set -ex && \
+    sed -i 's/http:/https:/' /etc/apk/repositories && \
     apk upgrade --update && \
     apk add --update --no-cache py-requests python libstdc++ curl ca-certificates bash openssl && \
     for pkg in glibc-${GLIBC_VERSION} glibc-bin-${GLIBC_VERSION} glibc-i18n-${GLIBC_VERSION}; do curl -sSL https://github.com/andyshinn/alpine-pkg-glibc/releases/download/${GLIBC_VERSION}/${pkg}.apk -o /tmp/${pkg}.apk; done && \
