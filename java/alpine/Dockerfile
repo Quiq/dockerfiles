@@ -17,11 +17,12 @@ RUN set -ex && \
     sed -i 's/http:/https:/' /etc/apk/repositories && \
     apk upgrade --update && \
     apk add --update --no-cache py-requests python libstdc++ curl ca-certificates bash openssl && \
-    for pkg in glibc-${GLIBC_VERSION} glibc-bin-${GLIBC_VERSION} glibc-i18n-${GLIBC_VERSION}; do curl -sSL https://github.com/andyshinn/alpine-pkg-glibc/releases/download/${GLIBC_VERSION}/${pkg}.apk -o /tmp/${pkg}.apk; done && \
+    wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://raw.githubusercontent.com/sgerrand/alpine-pkg-glibc/master/sgerrand.rsa.pub && \
+    for pkg in glibc-${GLIBC_VERSION} glibc-bin-${GLIBC_VERSION} glibc-i18n-${GLIBC_VERSION}; do curl -sSL https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_VERSION}/${pkg}.apk -o /tmp/${pkg}.apk; done && \
     echo "5b77a1bc456f486a31df0a3ce9dd8f7a442582680a0404a01edb4c78a030e835  /tmp/glibc-${GLIBC_VERSION}.apk" | sha256sum -c -s -  && \
     echo "7b8dfbf027b4fc80137b18c620cad07618395725ae466bb5d66fee55d9e70c88  /tmp/glibc-bin-${GLIBC_VERSION}.apk" | sha256sum -c -s -  && \
     echo "a3f03beba1958b3699bedafab108ae73477e58cc4d9f8d9e446b1b6eb3bf26e4  /tmp/glibc-i18n-${GLIBC_VERSION}.apk" | sha256sum -c -s -  && \
-    apk add --allow-untrusted /tmp/*.apk && \
+    apk add /tmp/*.apk && \
     rm -v /tmp/*.apk && \
     ( /usr/glibc-compat/bin/localedef --force --inputfile en_US --charmap UTF-8 en_US.UTF-8 || true ) && \
     echo "export LANG=en_US.UTF-8" > /etc/profile.d/locale.sh && \
