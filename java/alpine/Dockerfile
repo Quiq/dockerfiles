@@ -1,27 +1,28 @@
-FROM alpine:3.5
+FROM alpine:3.6
 MAINTAINER ryan.huddleston@centricient.com
 
 ENV JAVA_VERSION_MAJOR=8 \
-    JAVA_VERSION_MINOR=121 \
-    JAVA_VERSION_BUILD=13 \
+    JAVA_VERSION_MINOR=131 \
+    JAVA_VERSION_BUILD=11 \
     JAVA_PACKAGE=server-jre \
     JAVA_JCE=unlimited \
     JAVA_HOME=/opt/jdk \
     PATH=${PATH}:/opt/jdk/bin \
-    GLIBC_VERSION=2.23-r3 \
+    GLIBC_VERSION=2.25-r0 \
     LANG=en_US.UTF-8 \
     LANGUAGE=en_US:en \
-    LC_ALL=en_US.UTF-8
+    LC_ALL=en_US.UTF-8 \
+    PYTHONUNBUFFERED=1
 
 RUN set -ex && \
     sed -i 's/http:/https:/' /etc/apk/repositories && \
     apk upgrade --update && \
-    apk add --update --no-cache py-requests python libstdc++ curl ca-certificates bash openssl && \
-    wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://raw.githubusercontent.com/sgerrand/alpine-pkg-glibc/master/sgerrand.rsa.pub && \
+    apk add --update --no-cache py3-requests python3 libstdc++ curl ca-certificates bash && \
+    curl -Lo /etc/apk/keys/sgerrand.rsa.pub https://raw.githubusercontent.com/sgerrand/alpine-pkg-glibc/master/sgerrand.rsa.pub && \
     for pkg in glibc-${GLIBC_VERSION} glibc-bin-${GLIBC_VERSION} glibc-i18n-${GLIBC_VERSION}; do curl -sSL https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_VERSION}/${pkg}.apk -o /tmp/${pkg}.apk; done && \
-    echo "5b77a1bc456f486a31df0a3ce9dd8f7a442582680a0404a01edb4c78a030e835  /tmp/glibc-${GLIBC_VERSION}.apk" | sha256sum -c -s -  && \
-    echo "7b8dfbf027b4fc80137b18c620cad07618395725ae466bb5d66fee55d9e70c88  /tmp/glibc-bin-${GLIBC_VERSION}.apk" | sha256sum -c -s -  && \
-    echo "a3f03beba1958b3699bedafab108ae73477e58cc4d9f8d9e446b1b6eb3bf26e4  /tmp/glibc-i18n-${GLIBC_VERSION}.apk" | sha256sum -c -s -  && \
+    echo "b1747912145766364458f67aa6d9b81a3d7f62d7207962d972a56ca935461e50  /tmp/glibc-${GLIBC_VERSION}.apk" | sha256sum -c -s -  && \
+    echo "0999174703974a4f2fafbfcc69bd1b80cc99cfadaed72466485b2b24ceb14ba3  /tmp/glibc-bin-${GLIBC_VERSION}.apk" | sha256sum -c -s -  && \
+    echo "3dccbac67760693b50bf01bfb94e292b570ba24e7fbba2cf98417f06ce852dc4  /tmp/glibc-i18n-${GLIBC_VERSION}.apk" | sha256sum -c -s -  && \
     apk add /tmp/*.apk && \
     rm -v /tmp/*.apk && \
     ( /usr/glibc-compat/bin/localedef --force --inputfile en_US --charmap UTF-8 en_US.UTF-8 || true ) && \
@@ -29,13 +30,13 @@ RUN set -ex && \
     /usr/glibc-compat/sbin/ldconfig /lib /usr/glibc-compat/lib && \
     mkdir /opt && \
     curl -jksSLH "Cookie: oraclelicense=accept-securebackup-cookie" -o /tmp/java.tar.gz \
-      https://download.oracle.com/otn-pub/java/jdk/${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-b${JAVA_VERSION_BUILD}/e9e7ea248e2c4826b92b3f075a80e441/${JAVA_PACKAGE}-${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-linux-x64.tar.gz && \
-    echo "c25a60d02475499109f2bd6aa483721462aa7bfbb86b23ca6ac59be472747e5d  /tmp/java.tar.gz" | sha256sum -c -s -  && \
+      https://download.oracle.com/otn-pub/java/jdk/${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-b${JAVA_VERSION_BUILD}/d54c1d3a095b4ff2b6607d096fa80163/${JAVA_PACKAGE}-${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-linux-x64.tar.gz && \
+    echo "a80634d17896fe26e432f6c2b589ef6485685b2e717c82cd36f8f747d40ec84b  /tmp/java.tar.gz" | sha256sum -c -s -  && \
     tar -C /opt -xf /tmp/java.tar.gz && \
     ln -s /opt/jdk1.${JAVA_VERSION_MAJOR}.0_${JAVA_VERSION_MINOR} /opt/jdk && \
     find /opt/jdk/ -maxdepth 1 -mindepth 1 | grep -v jre | xargs rm -rf && \
     cd /opt/jdk/ && ln -s ./jre/bin ./bin && \
-    if [ "${JAVA_JCE}" == "unlimited" ]; then echo "Installing Unlimited JCE policy" && \
+    if [ "${JAVA_JCE}" = "unlimited" ]; then echo "Installing Unlimited JCE policy" && \
       curl -jksSLH "Cookie: oraclelicense=accept-securebackup-cookie" -o /tmp/jce_policy-${JAVA_VERSION_MAJOR}.zip \
         https://download.oracle.com/otn-pub/java/jce/${JAVA_VERSION_MAJOR}/jce_policy-${JAVA_VERSION_MAJOR}.zip && \
       echo "f3020a3922efd6626c2fff45695d527f34a8020e938a49292561f18ad1320b59  /tmp/jce_policy-${JAVA_VERSION_MAJOR}.zip" | sha256sum -c -s -  && \
@@ -43,10 +44,16 @@ RUN set -ex && \
       cp -v /tmp/UnlimitedJCEPolicyJDK8/*.jar /opt/jdk/jre/lib/security/; \
     fi && \
     sed -i s/#networkaddress.cache.ttl=-1/networkaddress.cache.ttl=10/ $JAVA_HOME/jre/lib/security/java.security && \
-    wget https://github.com/Yelp/dumb-init/releases/download/v1.2.0/dumb-init_1.2.0_amd64 && \
+    curl -Lo dumb-init_1.2.0_amd64 https://github.com/Yelp/dumb-init/releases/download/v1.2.0/dumb-init_1.2.0_amd64 && \
     echo "81231da1cd074fdc81af62789fead8641ef3f24b6b07366a1c34e5b059faf363  dumb-init_1.2.0_amd64" | sha256sum -c -s -  && \
     mv dumb-init_1.2.0_amd64 /usr/bin/dumb-init && \
     chmod 755 /usr/bin/dumb-init && \
+    cd /tmp && \
+    curl -Lo honest-profiler.zip http://insightfullogic.com/honest-profiler.zip && \
+    echo "378d5506d76d205f8c846e7dfdc701072ecb361a787365899f5a0637717db43f  honest-profiler.zip" | sha256sum -c -s -  && \
+    unzip honest-profiler.zip && \
+    mkdir /service && \
+    cp liblagent.so /service/ && \
     apk del curl glibc-i18n && \
     rm -rf /opt/jdk/jre/plugin \
            /opt/jdk/jre/bin/javaws \
