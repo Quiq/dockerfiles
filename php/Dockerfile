@@ -1,6 +1,5 @@
 # https://github.com/docker-library/wordpress/blob/3a1ca61731e6070764d5b7235e3b6617798b8af8/php7.1/fpm-alpine/Dockerfile
-# 7.1.2 is buggy. Mediawiki throws an exception: Could not gather sufficient random data in /var/www/html/includes/NoLocalSettings.php:44
-FROM php:7.1.1-fpm-alpine
+FROM php:7.1.7-fpm-alpine
 
 RUN set -ex; \
 	apk add --no-cache --virtual .build-deps \
