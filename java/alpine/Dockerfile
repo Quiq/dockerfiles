@@ -2,8 +2,8 @@ FROM alpine:3.6
 MAINTAINER ryan.huddleston@centricient.com
 
 ENV JAVA_VERSION_MAJOR=8 \
-    JAVA_VERSION_MINOR=131 \
-    JAVA_VERSION_BUILD=11 \
+    JAVA_VERSION_MINOR=144 \
+    JAVA_VERSION_BUILD=01 \
     JAVA_PACKAGE=server-jre \
     JAVA_JCE=unlimited \
     JAVA_HOME=/opt/jdk \
@@ -17,7 +17,7 @@ ENV JAVA_VERSION_MAJOR=8 \
 RUN set -ex && \
     sed -i 's/http:/https:/' /etc/apk/repositories && \
     apk upgrade --update && \
-    apk add --update --no-cache py3-requests python3 libstdc++ curl ca-certificates bash && \
+    apk add --update --no-cache libstdc++ curl ca-certificates bash && \
     curl -Lo /etc/apk/keys/sgerrand.rsa.pub https://raw.githubusercontent.com/sgerrand/alpine-pkg-glibc/master/sgerrand.rsa.pub && \
     for pkg in glibc-${GLIBC_VERSION} glibc-bin-${GLIBC_VERSION} glibc-i18n-${GLIBC_VERSION}; do curl -sSL https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_VERSION}/${pkg}.apk -o /tmp/${pkg}.apk; done && \
     echo "b1747912145766364458f67aa6d9b81a3d7f62d7207962d972a56ca935461e50  /tmp/glibc-${GLIBC_VERSION}.apk" | sha256sum -c -s -  && \
@@ -30,8 +30,8 @@ RUN set -ex && \
     /usr/glibc-compat/sbin/ldconfig /lib /usr/glibc-compat/lib && \
     mkdir /opt && \
     curl -jksSLH "Cookie: oraclelicense=accept-securebackup-cookie" -o /tmp/java.tar.gz \
-      https://download.oracle.com/otn-pub/java/jdk/${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-b${JAVA_VERSION_BUILD}/d54c1d3a095b4ff2b6607d096fa80163/${JAVA_PACKAGE}-${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-linux-x64.tar.gz && \
-    echo "a80634d17896fe26e432f6c2b589ef6485685b2e717c82cd36f8f747d40ec84b  /tmp/java.tar.gz" | sha256sum -c -s -  && \
+      https://download.oracle.com/otn-pub/java/jdk/${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-b${JAVA_VERSION_BUILD}/090f390dda5b47b9b721c7dfaa008135/${JAVA_PACKAGE}-${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-linux-x64.tar.gz && \
+    echo "8ba6f1c692518beb0c727c6e1fb8c30a5dfcc38f8ef9f4f7c7c114c01c747ebc  /tmp/java.tar.gz" | sha256sum -c -s -  && \
     tar -C /opt -xf /tmp/java.tar.gz && \
     ln -s /opt/jdk1.${JAVA_VERSION_MAJOR}.0_${JAVA_VERSION_MINOR} /opt/jdk && \
     find /opt/jdk/ -maxdepth 1 -mindepth 1 | grep -v jre | xargs rm -rf && \
@@ -83,5 +83,7 @@ RUN set -ex && \
            /opt/jdk/jre/lib/oblique-fonts \
            /opt/jdk/jre/lib/plugin.jar \
            /tmp/* /var/cache/apk/*
+
+WORKDIR /service
 
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
