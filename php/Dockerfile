@@ -1,5 +1,5 @@
 # https://github.com/docker-library/wordpress/blob/master/php7.2/fpm-alpine/Dockerfile
-FROM php:7.2.1-fpm-alpine3.7
+FROM php:7.2.8-fpm-alpine3.7
 
 RUN set -ex; \
 	apk add --no-cache --virtual .build-deps \
@@ -7,7 +7,7 @@ RUN set -ex; \
 		libpng-dev \
 	; \
 	docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr; \
-	docker-php-ext-install gd mysqli opcache; \
+	docker-php-ext-install gd mysqli opcache zip; \
 	runDeps="$( \
 		scanelf --needed --nobanner --format '%n#p' --recursive /usr/local/lib/php/extensions \
 			| tr ',' '\n' \
