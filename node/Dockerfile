@@ -1,7 +1,6 @@
-FROM node:6.11.2-alpine
+FROM node:8.11.3-alpine
 
-RUN apk add --no-cache python py-requests py-pip && \
-    pip install twilio==5.7.0
+RUN sed -i 's/http:/https:/' /etc/apk/repositories
 
 WORKDIR /usr/src/app
 
