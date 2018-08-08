@@ -1,8 +1,8 @@
-FROM alpine:3.7
+FROM alpine:3.8
 
 ENV JAVA_VERSION_MAJOR=8 \
-    JAVA_VERSION_MINOR=171 \
-    JAVA_VERSION_BUILD=11 \
+    JAVA_VERSION_MINOR=181 \
+    JAVA_VERSION_BUILD=13 \
     JAVA_PACKAGE=server-jre \
     JAVA_JCE=unlimited \
     JAVA_HOME=/opt/jdk \
@@ -29,7 +29,7 @@ RUN set -ex && \
     /usr/glibc-compat/sbin/ldconfig /lib /usr/glibc-compat/lib && \
     mkdir /opt && \
     curl -jksSLH "Cookie: oraclelicense=accept-securebackup-cookie" -o /tmp/java.tar.gz \
-      https://download.oracle.com/otn-pub/java/jdk/${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-b${JAVA_VERSION_BUILD}/512cd62ec5174c3487ac17c61aaa89e8/${JAVA_PACKAGE}-${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-linux-x64.tar.gz && \
+      https://download.oracle.com/otn-pub/java/jdk/${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-b${JAVA_VERSION_BUILD}/96a7b8442fe848ef90c96a2fad6ed6d1/${JAVA_PACKAGE}-${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-linux-x64.tar.gz && \
     JAVA_PACKAGE_SHA256=$(curl -sSL https://www.oracle.com/webfolder/s/digest/${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}checksum.html | grep -E "${JAVA_PACKAGE}-${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-linux-x64\.tar\.gz" | grep -Eo '(sha256: )[^<]+' | cut -d: -f2 | xargs) && \
     echo "${JAVA_PACKAGE_SHA256}  /tmp/java.tar.gz" | sha256sum -c -s -  && \
     tar -C /opt -xf /tmp/java.tar.gz && \
@@ -48,11 +48,11 @@ RUN set -ex && \
     echo "057ecd4ac1d3c3be31f82fc0848bf77b1326a975b4f8423fe31607205a0fe945  dumb-init_1.2.1_amd64" | sha256sum -c -s -  && \
     mv dumb-init_1.2.1_amd64 /usr/bin/dumb-init && \
     chmod 755 /usr/bin/dumb-init && \
+    mkdir /service && \
     cd /tmp && \
     curl -Lo honest-profiler.zip http://insightfullogic.com/honest-profiler.zip && \
     echo "378d5506d76d205f8c846e7dfdc701072ecb361a787365899f5a0637717db43f  honest-profiler.zip" | sha256sum -c -s -  && \
     unzip honest-profiler.zip && \
-    mkdir /service && \
     cp liblagent.so /service/ && \
     apk del curl glibc-i18n && \
     rm -rf /opt/jdk/jre/plugin \
