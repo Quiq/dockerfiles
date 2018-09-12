@@ -7,7 +7,7 @@ ENV JAVA_VERSION_MAJOR=8 \
     JAVA_JCE=unlimited \
     JAVA_HOME=/opt/jdk \
     PATH=${PATH}:/opt/jdk/bin \
-    GLIBC_VERSION=2.27-r0 \
+    GLIBC_VERSION=2.28-r0 \
     LANG=en_US.UTF-8 \
     LANGUAGE=en_US:en \
     LC_ALL=en_US.UTF-8 \
@@ -17,11 +17,11 @@ RUN set -ex && \
     sed -i 's/http:\/\/dl-cdn/https:\/\/dl-3/' /etc/apk/repositories && \
     apk --no-cache upgrade && \
     apk add --no-cache libstdc++ curl ca-certificates bash && \
-    curl -Lo /etc/apk/keys/sgerrand.rsa.pub https://raw.githubusercontent.com/sgerrand/alpine-pkg-glibc/master/sgerrand.rsa.pub && \
+    curl -Lo /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub && \
     for pkg in glibc-${GLIBC_VERSION} glibc-bin-${GLIBC_VERSION} glibc-i18n-${GLIBC_VERSION}; do curl -sSL https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_VERSION}/${pkg}.apk -o /tmp/${pkg}.apk; done && \
-    echo "938bceae3b83c53e7fa9cc4135ce45e04aae99256c5e74cf186c794b97473bc7  /tmp/glibc-${GLIBC_VERSION}.apk" | sha256sum -c -s -  && \
-    echo "3a87874e57b9d92e223f3e90356aaea994af67fb76b71bb72abfb809e948d0d6  /tmp/glibc-bin-${GLIBC_VERSION}.apk" | sha256sum -c -s -  && \
-    echo "78aff62b3185673c3434334b419ab3dc618af8ed6aeb3afe52a7dc585acb62c8  /tmp/glibc-i18n-${GLIBC_VERSION}.apk" | sha256sum -c -s -  && \
+    echo "f0a00f56fdee9dc888bafec0bf8f54fb188e99b5346032251abb79ef9c99f079  /tmp/glibc-${GLIBC_VERSION}.apk" | sha256sum -c -s -  && \
+    echo "b9a0d8359b12a9768f6378156f160d40f8e432e78e0b2aabc9d0a81e216e7f49  /tmp/glibc-bin-${GLIBC_VERSION}.apk" | sha256sum -c -s -  && \
+    echo "948aa0a87b2b93cef561d31c02060a162d592a3545af56171c3f8b0d6f918a48  /tmp/glibc-i18n-${GLIBC_VERSION}.apk" | sha256sum -c -s -  && \
     apk add /tmp/*.apk && \
     rm -v /tmp/*.apk && \
     ( /usr/glibc-compat/bin/localedef --force --inputfile en_US --charmap UTF-8 en_US.UTF-8 || true ) && \
@@ -32,7 +32,7 @@ RUN set -ex && \
       https://download.oracle.com/otn-pub/java/jdk/${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-b${JAVA_VERSION_BUILD}/96a7b8442fe848ef90c96a2fad6ed6d1/${JAVA_PACKAGE}-${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-linux-x64.tar.gz && \
     JAVA_PACKAGE_SHA256=$(curl -sSL https://www.oracle.com/webfolder/s/digest/${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}checksum.html | grep -E "${JAVA_PACKAGE}-${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-linux-x64\.tar\.gz" | grep -Eo '(sha256: )[^<]+' | cut -d: -f2 | xargs) && \
     echo "${JAVA_PACKAGE_SHA256}  /tmp/java.tar.gz" | sha256sum -c -s -  && \
-    tar -C /opt -xf /tmp/java.tar.gz && \
+    tar -C /opt -xof /tmp/java.tar.gz && \
     ln -s /opt/jdk1.${JAVA_VERSION_MAJOR}.0_${JAVA_VERSION_MINOR} /opt/jdk && \
     find /opt/jdk/ -maxdepth 1 -mindepth 1 | grep -v jre | xargs rm -rf && \
     cd /opt/jdk/ && ln -s ./jre/bin ./bin && \
