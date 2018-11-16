@@ -1,8 +1,8 @@
 FROM alpine:3.8
 
 ENV JAVA_VERSION_MAJOR=8 \
-    JAVA_VERSION_MINOR=181 \
-    JAVA_VERSION_BUILD=13 \
+    JAVA_VERSION_MINOR=191 \
+    JAVA_VERSION_BUILD=12 \
     JAVA_PACKAGE=server-jre \
     JAVA_JCE=unlimited \
     JAVA_HOME=/opt/jdk \
@@ -14,7 +14,7 @@ ENV JAVA_VERSION_MAJOR=8 \
     PYTHONUNBUFFERED=1
 
 RUN set -ex && \
-    sed -i 's/http:\/\/dl-cdn/https:\/\/dl-3/' /etc/apk/repositories && \
+    sed -i 's/http:\/\/dl-cdn/https:\/\/dl-4/' /etc/apk/repositories && \
     apk --no-cache upgrade && \
     apk add --no-cache libstdc++ curl ca-certificates bash && \
     curl -Lo /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub && \
@@ -29,7 +29,7 @@ RUN set -ex && \
     /usr/glibc-compat/sbin/ldconfig /lib /usr/glibc-compat/lib && \
     mkdir /opt && \
     curl -jksSLH "Cookie: oraclelicense=accept-securebackup-cookie" -o /tmp/java.tar.gz \
-      https://download.oracle.com/otn-pub/java/jdk/${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-b${JAVA_VERSION_BUILD}/96a7b8442fe848ef90c96a2fad6ed6d1/${JAVA_PACKAGE}-${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-linux-x64.tar.gz && \
+      https://download.oracle.com/otn-pub/java/jdk/${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-b${JAVA_VERSION_BUILD}/2787e4a523244c269598db4e85c51e0c/${JAVA_PACKAGE}-${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-linux-x64.tar.gz && \
     JAVA_PACKAGE_SHA256=$(curl -sSL https://www.oracle.com/webfolder/s/digest/${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}checksum.html | grep -E "${JAVA_PACKAGE}-${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-linux-x64\.tar\.gz" | grep -Eo '(sha256: )[^<]+' | cut -d: -f2 | xargs) && \
     echo "${JAVA_PACKAGE_SHA256}  /tmp/java.tar.gz" | sha256sum -c -s -  && \
     tar -C /opt -xof /tmp/java.tar.gz && \
