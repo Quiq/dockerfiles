@@ -1,8 +1,8 @@
 FROM alpine:3.8
 
 ENV JAVA_VERSION_MAJOR=8 \
-    JAVA_VERSION_MINOR=191 \
-    JAVA_VERSION_BUILD=12 \
+    JAVA_VERSION_MINOR=201 \
+    JAVA_VERSION_BUILD=09 \
     JAVA_PACKAGE=server-jre \
     JAVA_JCE=unlimited \
     JAVA_HOME=/opt/jdk \
@@ -28,8 +28,8 @@ RUN set -ex && \
     echo "export LANG=en_US.UTF-8" > /etc/profile.d/locale.sh && \
     /usr/glibc-compat/sbin/ldconfig /lib /usr/glibc-compat/lib && \
     mkdir /opt && \
-    curl -jksSLH "Cookie: oraclelicense=accept-securebackup-cookie" -o /tmp/java.tar.gz \
-      https://download.oracle.com/otn-pub/java/jdk/${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-b${JAVA_VERSION_BUILD}/2787e4a523244c269598db4e85c51e0c/${JAVA_PACKAGE}-${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-linux-x64.tar.gz && \
+    curl -jsSLH "Cookie: oraclelicense=accept-securebackup-cookie" -o /tmp/java.tar.gz \
+      https://download.oracle.com/otn-pub/java/jdk/${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-b${JAVA_VERSION_BUILD}/42970487e3af4f5aa5bca3f542482c60/${JAVA_PACKAGE}-${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-linux-x64.tar.gz && \
     JAVA_PACKAGE_SHA256=$(curl -sSL https://www.oracle.com/webfolder/s/digest/${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}checksum.html | grep -E "${JAVA_PACKAGE}-${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-linux-x64\.tar\.gz" | grep -Eo '(sha256: )[^<]+' | cut -d: -f2 | xargs) && \
     echo "${JAVA_PACKAGE_SHA256}  /tmp/java.tar.gz" | sha256sum -c -s -  && \
     tar -C /opt -xof /tmp/java.tar.gz && \
@@ -37,16 +37,16 @@ RUN set -ex && \
     find /opt/jdk/ -maxdepth 1 -mindepth 1 | grep -v jre | xargs rm -rf && \
     cd /opt/jdk/ && ln -s ./jre/bin ./bin && \
     if [ "${JAVA_JCE}" = "unlimited" ]; then echo "Installing Unlimited JCE policy" && \
-      curl -jksSLH "Cookie: oraclelicense=accept-securebackup-cookie" -o /tmp/jce_policy-${JAVA_VERSION_MAJOR}.zip \
+      curl -jsSLH "Cookie: oraclelicense=accept-securebackup-cookie" -o /tmp/jce_policy-${JAVA_VERSION_MAJOR}.zip \
         https://download.oracle.com/otn-pub/java/jce/${JAVA_VERSION_MAJOR}/jce_policy-${JAVA_VERSION_MAJOR}.zip && \
       echo "f3020a3922efd6626c2fff45695d527f34a8020e938a49292561f18ad1320b59  /tmp/jce_policy-${JAVA_VERSION_MAJOR}.zip" | sha256sum -c -s -  && \
       cd /tmp && unzip /tmp/jce_policy-${JAVA_VERSION_MAJOR}.zip && \
       cp -v /tmp/UnlimitedJCEPolicyJDK8/*.jar /opt/jdk/jre/lib/security/; \
     fi && \
     sed -i s/#networkaddress.cache.ttl=-1/networkaddress.cache.ttl=10/ $JAVA_HOME/jre/lib/security/java.security && \
-    curl -Lo dumb-init_1.2.1_amd64 https://github.com/Yelp/dumb-init/releases/download/v1.2.1/dumb-init_1.2.1_amd64 && \
-    echo "057ecd4ac1d3c3be31f82fc0848bf77b1326a975b4f8423fe31607205a0fe945  dumb-init_1.2.1_amd64" | sha256sum -c -s -  && \
-    mv dumb-init_1.2.1_amd64 /usr/bin/dumb-init && \
+    curl -Lo dumb-init_1.2.2_amd64 https://github.com/Yelp/dumb-init/releases/download/v1.2.2/dumb-init_1.2.2_amd64 && \
+    echo "37f2c1f0372a45554f1b89924fbb134fc24c3756efaedf11e07f599494e0eff9  dumb-init_1.2.2_amd64" | sha256sum -c -s -  && \
+    mv dumb-init_1.2.2_amd64 /usr/bin/dumb-init && \
     chmod 755 /usr/bin/dumb-init && \
     mkdir /service && \
     cd /tmp && \
