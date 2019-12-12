@@ -1,4 +1,4 @@
-FROM debian:stretch-slim as builder
+FROM ubuntu:18.04 as builder
 
 WORKDIR /opt
 
@@ -19,11 +19,13 @@ RUN git clone https://github.com/maxbube/mydumper.git && \
     make
 
 
-FROM debian:stretch-slim
+FROM ubuntu:18.04
 
-COPY --from=builder /lib/x86_64-linux-gnu/libglib-2.0.so.0 /lib/x86_64-linux-gnu/
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libcrypto.so.1.1 /usr/lib/x86_64-linux-gnu/
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libglib-2.0.so.0 /usr/lib/x86_64-linux-gnu/
 COPY --from=builder /usr/lib/x86_64-linux-gnu/libgthread-2.0.so.0 /usr/lib/x86_64-linux-gnu/
-COPY --from=builder /usr/lib/x86_64-linux-gnu/libmariadbclient.so.18 /usr/lib/x86_64-linux-gnu/
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libmysqlclient.so.20 /usr/lib/x86_64-linux-gnu/
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libssl.so.1.1 /usr/lib/x86_64-linux-gnu/
 
 COPY --from=builder /opt/mydumper/mydumper /usr/local/bin/
 COPY --from=builder /opt/mydumper/myloader /usr/local/bin/
