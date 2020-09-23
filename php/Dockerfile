@@ -1,7 +1,7 @@
 # https://github.com/docker-library/wordpress/blob/master/php7.4/fpm-alpine/Dockerfile
 FROM php:7.4-fpm-alpine
 
-RUN set -ex; \
+RUN set -eux; \
 	apk add --no-cache --virtual .build-deps \
 		libjpeg-turbo-dev \
 		libpng-dev \
@@ -15,8 +15,9 @@ RUN set -ex; \
 			| sort -u \
 			| awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }' \
 	)"; \
-	apk add --virtual .phpexts-rundeps $runDeps; \
+	apk add --virtual .phpexts-rundeps $runDeps gifsicle optipng libjpeg-turbo-utils; \
 	apk del .build-deps; \
+        docker-php-ext-enable opcache; \
 	{ \
 		echo 'opcache.memory_consumption=128'; \
 		echo 'opcache.interned_strings_buffer=8'; \
