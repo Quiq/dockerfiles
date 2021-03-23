@@ -1,4 +1,4 @@
-FROM adoptopenjdk/openjdk11:x86_64-alpine-jre-11.0.9_11
+FROM adoptopenjdk/openjdk11:x86_64-alpine-jre-11.0.10_9
 
 RUN set -ex && \
   sed -i 's/http:\/\/dl-cdn/https:\/\/dl-4/' /etc/apk/repositories && \
