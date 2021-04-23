@@ -1,6 +1,4 @@
-FROM node:12.14.1-alpine
-
-RUN sed -i 's/http:/https:/' /etc/apk/repositories
+FROM node:14.16.1-alpine3.13
 
 WORKDIR /usr/src/app
 
