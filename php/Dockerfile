@@ -1,4 +1,4 @@
-# https://github.com/docker-library/wordpress/blob/master/php7.4/fpm-alpine/Dockerfile
+# https://github.com/docker-library/wordpress/blob/master/latest/php7.4/fpm-alpine/Dockerfile
 FROM php:7.4-fpm-alpine
 
 RUN set -eux; \
