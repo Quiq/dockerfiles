@@ -1,7 +1,6 @@
-FROM adoptopenjdk/openjdk11:x86_64-alpine-jre-11.0.10_9
+FROM adoptopenjdk/openjdk11:x86_64-alpine-jre-11.0.11_9
 
 RUN set -ex && \
-  sed -i 's/http:\/\/dl-cdn/https:\/\/dl-4/' /etc/apk/repositories && \
   apk add --no-cache ca-certificates dumb-init bash && \
   mkdir /service
 
