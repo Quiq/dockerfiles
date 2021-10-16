@@ -5,9 +5,10 @@ RUN set -eux; \
 	apk add --no-cache --virtual .build-deps \
 		libjpeg-turbo-dev \
 		libpng-dev \
+                libwebp-dev \
 		libzip-dev \
 	; \
-	docker-php-ext-configure gd --with-jpeg; \
+	docker-php-ext-configure gd --with-jpeg --with-webp; \
 	docker-php-ext-install gd mysqli opcache zip; \
 	runDeps="$( \
 		scanelf --needed --nobanner --format '%n#p' --recursive /usr/local/lib/php/extensions \
