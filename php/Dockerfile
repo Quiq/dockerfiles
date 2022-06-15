@@ -3,13 +3,14 @@ FROM php:7.4-fpm-alpine
 
 RUN set -eux; \
 	apk add --no-cache --virtual .build-deps \
+		icu-dev \
 		libjpeg-turbo-dev \
 		libpng-dev \
                 libwebp-dev \
 		libzip-dev \
 	; \
 	docker-php-ext-configure gd --with-jpeg --with-webp; \
-	docker-php-ext-install gd mysqli opcache zip; \
+	docker-php-ext-install gd intl mysqli opcache zip; \
 	runDeps="$( \
 		scanelf --needed --nobanner --format '%n#p' --recursive /usr/local/lib/php/extensions \
 			| tr ',' '\n' \
