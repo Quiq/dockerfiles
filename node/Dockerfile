@@ -1,4 +1,5 @@
-FROM node:14.16.1-alpine3.13
+ARG VERSION
+FROM node:${VERSION}-alpine
 
 WORKDIR /usr/src/app
 
