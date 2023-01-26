@@ -1,4 +1,4 @@
-FROM adoptopenjdk/openjdk11:x86_64-alpine-jre-11.0.16.1_1
+FROM adoptopenjdk/openjdk11:x86_64-alpine-jre-11.0.18_10
 
 RUN set -ex && \
   apk add --no-cache ca-certificates dumb-init bash && \
